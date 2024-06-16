@@ -7,4 +7,4 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 add_executable(pqSearch pqSearch.cpp utils/Heap.cpp)
 
-target_include_directories(pqSearch PRIVATE ${PROJECT_SOURCE_DIR}/utils)
+#target_include_directories(pqSearch PRIVATE ${PROJECT_SOURCE_DIR})
