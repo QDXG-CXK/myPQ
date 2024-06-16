@@ -15,7 +15,7 @@
  *
  * All heap functions rely on a C template class that define the type of the
  * keys and values and their ordering (increasing with CMax and decreasing with
- * Cmin). The C types are defined in ordered_key_value.h
+ * Cmin). The C types are defined in ordered_key_value.h 
  */
 
 #ifndef FAISS_Heap_h
