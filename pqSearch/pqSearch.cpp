@@ -35,11 +35,11 @@
 
 #include <iostream>
 #include <cassert>
-#include "utils/Heap.h" // Include the FAISS heap header
+#include "utils/Heap.h" // Include the myPQ heap header
 
 void test_maxheap_operations() {
     size_t k = 5; // heap size
-    faiss::float_maxheap_array_t heap_array;
+    myPQ::float_maxheap_array_t heap_array;
     heap_array.nh = 1; // number of heaps
     heap_array.k = k; // elements per heap
     heap_array.val = new float[heap_array.nh * heap_array.k];
