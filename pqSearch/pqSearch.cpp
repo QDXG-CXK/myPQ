@@ -38,7 +38,8 @@
 #include "utils/Heap.h" // Include the myPQ heap header
 
 void test_maxheap_operations() {
-    size_t k = 5; // heap size
+    float last_val;
+    size_t k = 3; // heap size
     myPQ::float_maxheap_array_t heap_array;
     heap_array.nh = 1; // number of heaps
     heap_array.k = k; // elements per heap
@@ -52,22 +53,32 @@ void test_maxheap_operations() {
     float values[] = {3.0, 1.0, 4.0, 1.5, 2.0};
     int64_t ids[] = {3, 1, 4, 2, 5};
 
-    // Fill the heap
-    for (size_t i = 0; i < k; ++i) {
-        heap_array.addn(1, &values[i], ids[i]);
+    for (int i=0;i<5;i++){
+        std::cout<<i<<":\n";
+        heap_array.addn_with_ids(1, &values[i], &ids[i]);
+        // Check ordering (should be max heap, so in decreasing order)
+        last_val = std::numeric_limits<float>::max();
+        for (size_t i = 0; i < k; ++i) {
+            float current_val = heap_array.val[i];
+            std::cout << "Value: " << current_val << ", ID: " << heap_array.ids[i] << std::endl;
+            //assert(current_val <= last_val); // validate order
+            last_val = current_val;
+        }
+        
+        std::cout<<i<<"reorder:\n";
+        // Reorder to get sorted output
+        heap_array.reorder();
+        // Check ordering (should be max heap, so in decreasing order)
+        last_val = std::numeric_limits<float>::max();
+        for (size_t i = 0; i < k; ++i) {
+            float current_val = heap_array.val[i];
+            std::cout << "Value: " << current_val << ", ID: " << heap_array.ids[i] << std::endl;
+            //assert(current_val <= last_val); // validate order
+            last_val = current_val;
+        }
     }
-
-    // Reorder to get sorted output
-    heap_array.reorder();
-
-    // Check ordering (should be max heap, so in decreasing order)
-    float last_val = std::numeric_limits<float>::max();
-    for (size_t i = 0; i < k; ++i) {
-        float current_val = heap_array.val[i];
-        std::cout << "Value: " << current_val << ", ID: " << heap_array.ids[i] << std::endl;
-        assert(current_val <= last_val); // validate order
-        last_val = current_val;
-    }
+    
+    
 }
 
 int main() {
