@@ -54,7 +54,7 @@ void test_maxheap_operations() {
 
     // Fill the heap
     for (size_t i = 0; i < k; ++i) {
-        heap_array.addn(1, &values[i], &ids[i]);
+        heap_array.addn(1, &values[i], ids[i]);
     }
 
     // Reorder to get sorted output
