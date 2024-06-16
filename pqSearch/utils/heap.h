@@ -31,9 +31,9 @@
 
 #include <limits>
 
-#include <faiss/utils/ordered_key_value.h>
+#include <utils/ordered_key_value.h>
 
-namespace faiss {
+namespace myPQ {
 
 /*******************************************************************
  * Basic heap ops: push and pop
@@ -526,6 +526,6 @@ void merge_knn_results(
         typename C::T* distances,
         idx_t* labels);
 
-} // namespace faiss
+} // namespace myPQ
 
 #endif /* FAISS_Heap_h */

@@ -9,10 +9,9 @@
 
 /* Function for soft heap */
 
-#include <faiss/impl/FaissAssert.h>
-#include <faiss/utils/Heap.h>
+#include <utils/Heap.h>
 
-namespace faiss {
+namespace myPQ {
 
 template <typename C>
 void HeapArray<C>::heapify() {
@@ -87,7 +86,6 @@ void HeapArray<C>::addn_query_subset_with_ids(
         const T* vin,
         const TI* id_in,
         int64_t id_stride) {
-    FAISS_THROW_IF_NOT_MSG(id_in, "anonymous ids not supported");
     if (id_stride < 0) {
         id_stride = nj;
     }
@@ -247,4 +245,4 @@ INSTANTIATE(CMax, float);
 INSTANTIATE(CMin, int32_t);
 INSTANTIATE(CMax, int32_t);
 
-} // namespace faiss
+} // namespace myPQ

@@ -12,7 +12,7 @@
 
 #include <limits>
 
-namespace faiss {
+namespace myPQ {
 
 /*******************************************************************
  * C object: uniform handling of min and max heap
