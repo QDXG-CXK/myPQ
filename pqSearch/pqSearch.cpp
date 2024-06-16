@@ -64,8 +64,9 @@ void test_maxheap_operations() {
             //assert(current_val <= last_val); // validate order
             last_val = current_val;
         }
-        
-        std::cout<<i<<"reorder:\n";
+    }
+
+    std::cout<<"reorder:\n";
         // Reorder to get sorted output
         heap_array.reorder();
         // Check ordering (should be max heap, so in decreasing order)
@@ -76,7 +77,6 @@ void test_maxheap_operations() {
             //assert(current_val <= last_val); // validate order
             last_val = current_val;
         }
-    }
     
     
 }
