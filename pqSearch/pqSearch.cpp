@@ -1,38 +1,3 @@
-
-
-// void PQsearch(
-//         uint32_t k,
-//         uint32_t nbits,
-//         uint32_t nq,
-//         const float* xq,
-//         uint32_t nb,
-//         const uint8_t *codes,
-//         float* distances,
-//         uint32_t* labels)
-// {
-//     // float_maxheap_array_t res = {size_t(n), size_t(k), labels, distances};
-//     // pq.search(x, n, codes.data(), ntotal, &res, true);
-//     Heap heap;
-//     for (uint32_t i=0; i<nq; i++){
-//         //create lut
-//         std::unique_ptr<float[]> dis_tables(new float[nx * ksub * M]);
-//         compute_distance_tables(nx, x, dis_tables.get());
-
-//         //compute distances and insert into heap
-//         pq_knn_search_with_tables<CMax<float, int64_t>>(
-//             *this,
-//             nbits,
-//             dis_tables.get(),
-//             codes,
-//             ncodes,
-//             res,
-//             init_finalize_heap);
-
-//         //save knn ids and distances
-//     }
-// }
-
-
 #include <iostream>
 #include <cassert>
 #include "utils/Heap.h" // Include the myPQ heap header
@@ -77,17 +42,85 @@ void test_maxheap_operations() {
             //assert(current_val <= last_val); // validate order
             last_val = current_val;
         }
-    
-    
+}
+
+void PQsearch(
+        uint32_t k,
+        uint32_t nbits,
+        uint32_t pqdim,
+        uint32_t dsub,
+        float* centroids,
+        uint32_t nq,
+        const float* xq,
+        uint32_t ncodes,
+        const uint8_t *codes,
+        float* distances,
+        uint32_t* labels)
+{
+    const uint32_t ksub = 1 << nbits;
+    const uint32_t dim = pqdim * dsub;
+
+    for (uint32_t i=0; i<nq; i++){
+        //create lut
+        float *dis_table = new float[ksub * pqdim];
+        const float *query = xq + i * dim;
+        for (size_t m = 0; m < pqdim; m++) {
+            for(size_t k = 0; k < ksub; k++){
+                const float *x = query + m * dsub;
+                const float *y = centroids + m * dsub * ksub + k;
+                float dis = 0;
+                for(size_t d = 0; d < dsub; d++){
+                    const float tmp =x[d] - y[d];
+                    dis += tmp * tmp;
+                }
+                dis_table[m * ksub + k] = dis;
+            }
+        }
+
+        
+        //compute distances and insert into heap
+        myPQ::float_maxheap_array_u32t heap = {1, k, labels + i * k, distances + i * k};
+        heap.heapify();
+        switch (nbits) {
+            case 8:
+                const uint8_t *cur_code = codes;
+                for (uint32_t j = 0; j < ncodes; j++) {
+                    float dis = 0;
+                    float *cur_lut = dis_table;
+                    for (int m = 0; m < pqdim; m++) {
+                        dis += cur_lut[*cur_code];
+                        cur_code++;
+                        cur_lut += ksub;
+                    }
+                    heap.addn_with_ids(1, &dis, &j);
+                }
+                break;
+            default:
+                assert(0);
+        }
+        heap.reorder(); // heap --> ordered list
+    }
 }
 
 int main() {
-    try {
-        test_maxheap_operations();
-        std::cout << "Test completed successfully." << std::endl;
-    } catch (const std::exception& e) {
-        std::cerr << "Test failed: " << e.what() << std::endl;
-        return 1;
-    }
+    //input
+    const uint32_t k = 2;
+    const uint32_t nbits = 8;
+    const uint32_t pqdim = 2;
+    const uint32_t dsub = 2;
+    float centroids[pqdim * 256 * dsub]={};
+    const uint32_t nq = 10;
+    float xq[nq * pqdim * dsub]={};
+    const uint32_t ncodes = 10;
+    uint8_t codes[ncodes * pqdim] = {};
+
+    //output
+    float* distances = new float[nq * k];
+    uint32_t* labels = new uint32_t[nq * k];
+
+
+    //debug
+    PQsearch(k, nbits, pqdim, dsub, centroids, nq, xq, ncodes, codes,distances, labels);
+
     return 0;
 }

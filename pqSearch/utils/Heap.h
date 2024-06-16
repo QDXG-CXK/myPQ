@@ -444,6 +444,8 @@ typedef HeapArray<CMin<int, int64_t>> int_minheap_array_t;
 typedef HeapArray<CMax<float, int64_t>> float_maxheap_array_t;
 typedef HeapArray<CMax<int, int64_t>> int_maxheap_array_t;
 
+typedef HeapArray<CMax<float, uint32_t>> float_maxheap_array_u32t;
+
 // The heap templates are instantiated explicitly in Heap.cpp
 
 /*********************************************************************
