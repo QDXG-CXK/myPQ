@@ -24,7 +24,7 @@
 #include <climits>
 #include <cmath>
 #include <cstring>
-
+#include <vector>
 #include <stdint.h>
 #include <cassert>
 #include <cstdio>
