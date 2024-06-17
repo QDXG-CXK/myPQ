@@ -102,10 +102,10 @@ if __name__=='__main__':
     # get gt
     D, I = index.search(xq, K)
 
-    # get codewords (M * Ksub * Dsub)
+    # save codewords (M * Ksub * Dsub)
     codewords = faiss.vector_to_array(index.pq.centroids).reshape((PQDIM, 2 ** NBITS, dim // PQDIM))
     saveCodewords(codewords, OUTPUT_PATH+"mycodewords")
-    # get pq codes (ntotal * code_size)
+    # save pq codes (ntotal * code_size)
     codes = faiss.vector_to_array(index.codes).reshape((xb.shape[0], PQDIM*NBITS//8))
     saveCodes(codes, OUTPUT_PATH+"mycodes")
     
