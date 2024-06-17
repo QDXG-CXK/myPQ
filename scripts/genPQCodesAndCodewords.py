@@ -1,20 +1,13 @@
 import faiss
 import numpy as np
 
+NB = 10000
+NQ = 100
+DIM = 32
 NBITS = 8
 PQDIM = 8
-N0DIM = 0
-DATASET = "sift1m"
+K = 5
 OUTPUT_PATH = "./"
-
-if DATASET == "ood400m":
-    PATH_QUERY = "/home/cuixk/dataset/newOOD/ood400m/query.i8bin"
-    PATH_GROUNDTRUTH = "/home/cuixk/dataset/newOOD/ood400m/gt.u64bin"
-    PATH_BASE = "/home/cuixk/dataset/newOOD/ood400m/base.i8bin"
-elif DATASET == "sift1m":
-    PATH_QUERY = "/home/yangshuo/data/sift1m/query.fbin"
-    PATH_GROUNDTRUTH = "/home/yangshuo/data/sift1m/gt.ibin"
-    PATH_BASE = "/home/yangshuo/data/sift1m/base.fbin"
 
 def read_bin(fname):
     # Parse the postfix of the file name with Regular Expression
@@ -61,27 +54,6 @@ def write_bin(data, base_fname):
         f.write(shape.tobytes())
         f.write(data.tobytes())
 
-def load_dataset():
-    print("\nloading ", ds)
-    x_base, n_base, dim_base = read_bin(PATH_BASE)
-    x_query, n_query, dim_query = read_bin(PATH_QUERY)
-    gt, n_gt, k_gt = read_bin(PATH_GROUNDTRUTH)
-    assert  dim_base == dim_query, "dim_base != dim_query"
-    assert n_query == n_gt, "n_query != n_gt"
-    print(time.strftime("[%H:%M:%S]", time.localtime()), "Have loaded %d base of %s data type with %d dim, %d queries and gt with top-%d." %
-        (n_base, x_base.dtype, dim_base, n_query, k_gt)
-    )
-    return x_base, x_query, gt, int(dim_base)
-
-def insert_zeros(xb, subDim, N0):
-    if(N0>10):
-        return insert_zeros_parallel(xb, subDim, N0)
-
-    insert_positions = np.arange(subDim - 1, subDim * (N0 + 1) - 1, subDim)
-    for pos in insert_positions:
-        xb = np.insert(xb, pos, 0, axis=1)
-    return xb
-
 def saveCodes(codes, fname, id_width=0):
     ntotal, code_size = codes.shape
     with open(fname, 'wb') as file:
@@ -113,38 +85,27 @@ def saveCodewords(codewords, fname):
     print(fname+" Saved.")
 
 if __name__=='__main__':
-    xb, xq, gt, dim = load_dataset()
-    N = xb.shape[0]
-    
-    # append dim of value 0
-    if N0DIM != 0:
-        na = N0DIM
-        subDim = (dim + na) // PQDIM
-        xb = insert_zeros(xb, subDim, na)
-        xq = insert_zeros(xq, subDim, na)
-        print("new base shape:", xb.shape)
-        dim += na
-    
-    print("Sampling...")
-    x_samples = xb[np.random.choice(xb.shape[0], size=100000, replace=False),:]
-    print("Done.")
+    xb = np.random.rand(NB,DIM).astype(np.float32)
+    xq = np.random.rand(NQ,DIM).astype(np.float32)
 
     # build index
-    index = faiss.IndexPQ(dim, PQDIM, NBITS)
+    index = faiss.IndexPQ(DIM, PQDIM, NBITS)
     res = faiss.StandardGpuResources()
     index = faiss.index_cpu_to_gpu(res, 0, index)
     print("Training...")
-    index.train(x_samples)
+    index.train(xb)
     print("Done.")
     print("Encoding...")
     index.add(xb)
     print("Done.")
-    del xb
 
-    get codewords (M * Ksub * Dsub)
+    # get gt
+    D, I = index.search(xq, K)
+
+    # get codewords (M * Ksub * Dsub)
     codewords = faiss.vector_to_array(index.pq.centroids).reshape((PQDIM, 2 ** NBITS, dim // PQDIM))
     saveCodewords(codewords, OUTPUT_PATH+"mycodewords")
-    get pq codes (ntotal * code_size)
+    # get pq codes (ntotal * code_size)
     codes = faiss.vector_to_array(index.codes).reshape((xb.shape[0], PQDIM*NBITS//8))
     saveCodes(codes, OUTPUT_PATH+"mycodes")
     
