@@ -138,6 +138,7 @@ template struct HeapArray<CMin<float, int32_t>>;
 template struct HeapArray<CMax<float, int32_t>>;
 template struct HeapArray<CMin<int, int64_t>>;
 template struct HeapArray<CMax<int, int64_t>>;
+template struct HeapArray<CMax<float, uint32_t>>; //mine
 
 /**********************************************************
  * merge knn search results
