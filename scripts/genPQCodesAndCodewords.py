@@ -93,8 +93,8 @@ if __name__=='__main__':
 
     # build index
     index = faiss.IndexPQ(DIM, PQDIM, NBITS)
-    res = faiss.StandardGpuResources()
-    index = faiss.index_cpu_to_gpu(res, 0, index)
+    #res = faiss.StandardGpuResources()
+    #index = faiss.index_cpu_to_gpu(res, 0, index)
     print("Training...")
     index.train(xb)
     print("Done.")
