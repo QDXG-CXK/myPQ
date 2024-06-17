@@ -48,7 +48,7 @@ void PQsearch(
         uint32_t k,
         uint32_t nbits,
         uint32_t pqdim,
-        uint32_t dsub,
+        uint32_t subdim,
         float* centroids,
         uint32_t nq,
         const float* xq,
@@ -58,7 +58,7 @@ void PQsearch(
         uint32_t* labels)
 {
     const uint32_t ksub = 1 << nbits;
-    const uint32_t dim = pqdim * dsub;
+    const uint32_t dim = pqdim * subdim;
 
     for (uint32_t i=0; i<nq; i++){
         //create lut
@@ -66,10 +66,10 @@ void PQsearch(
         const float *query = xq + i * dim;
         for (size_t m = 0; m < pqdim; m++) {
             for(size_t k = 0; k < ksub; k++){
-                const float *x = query + m * dsub;
-                const float *y = centroids + m * dsub * ksub + k;
+                const float *x = query + m * subdim;
+                const float *y = centroids + m * subdim * ksub + k;
                 float dis = 0;
-                for(size_t d = 0; d < dsub; d++){
+                for(size_t d = 0; d < subdim; d++){
                     const float tmp =x[d] - y[d];
                     dis += tmp * tmp;
                 }
@@ -109,10 +109,10 @@ int main() {
     const uint32_t k = 2;
     const uint32_t nbits = 8;
     const uint32_t pqdim = 2;
-    const uint32_t dsub = 2;
-    float centroids[pqdim * 256 * dsub]={};
+    const uint32_t subdim = 2;
+    float centroids[pqdim * 256 * subdim]={};
     const uint32_t nq = 10;
-    float xq[nq * pqdim * dsub]={};
+    float xq[nq * pqdim * subdim]={};
     const uint32_t ncodes = 10;
     uint8_t codes[ncodes * pqdim] = {};
 
@@ -122,7 +122,7 @@ int main() {
 
 
     //debug
-    PQsearch(k, nbits, pqdim, dsub, centroids, nq, xq, ncodes, codes,distances, labels);
+    PQsearch(k, nbits, pqdim, subdim, centroids, nq, xq, ncodes, codes,distances, labels);
 
     return 0;
 }
