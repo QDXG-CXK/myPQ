@@ -8,7 +8,7 @@ DIM = 32
 NBITS = 8
 PQDIM = 8
 K = 5
-OUTPUT_PATH = "./"
+OUTPUT_PATH = "../data"
 
 def read_bin(fname):
     # Parse the postfix of the file name with Regular Expression
