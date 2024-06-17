@@ -1,5 +1,6 @@
 import faiss
 import numpy as np
+from os.path import join
 
 NB = 10000
 NQ = 100
@@ -85,6 +86,8 @@ def saveCodewords(codewords, fname):
     print(fname+" Saved.")
 
 if __name__=='__main__':
+    print("NB=%d, NQ=%d, DIM=%d, NBITS=%d, PQDIM=%d, K=%d, OUTPUT_PATH=%s" % (NB, NQ, DIM, NBITS, PQDIM, K, OUTPUT_PATH))
+    
     xb = np.random.rand(NB,DIM).astype(np.float32)
     xq = np.random.rand(NQ,DIM).astype(np.float32)
 
@@ -100,12 +103,34 @@ if __name__=='__main__':
     print("Done.")
 
     # get gt
+    print("Searching...")
     D, I = index.search(xq, K)
+    print("Done.")
+
+    # save gt_D
+    print("saving gt_D with shape ", D.shape)
+    with open(join(OUTPUT_PATH, "gt_D.bin"), "wb") as f:
+        f.write(D.tobytes())
+        
+    # save gt_I
+    print("saving I with shape ", I.shape)
+    with open(join(OUTPUT_PATH, "gt_I.bin"), "wb") as f:
+        f.write(I.tobytes())
+        
+    # save query
+    print("saving xq with shape ", xq.shape)
+    with open(join(OUTPUT_PATH, "query.bin"), "wb") as f:
+        f.write(xq.tobytes())
 
     # save codewords (M * Ksub * Dsub)
-    codewords = faiss.vector_to_array(index.pq.centroids).reshape((PQDIM, 2 ** NBITS, dim // PQDIM))
-    saveCodewords(codewords, OUTPUT_PATH+"mycodewords")
+    codewords = faiss.vector_to_array(index.pq.centroids).reshape((PQDIM, 2 ** NBITS, DIM // PQDIM))
+    print("saving codewords with shape ", codewords.shape)
+    with open(join(OUTPUT_PATH, "mycodebook.bin"), "wb") as f:
+        f.write(codewords.tobytes())
+        
     # save pq codes (ntotal * code_size)
-    codes = faiss.vector_to_array(index.codes).reshape((xb.shape[0], PQDIM*NBITS//8))
-    saveCodes(codes, OUTPUT_PATH+"mycodes")
+    codes = faiss.vector_to_array(index.codes).reshape((NB, PQDIM*NBITS//8))
+    print("saving codes with shape ", codes.shape)
+    with open(join(OUTPUT_PATH, "mycodes.bin"), "wb") as f:
+        f.write(codes.tobytes())
     
