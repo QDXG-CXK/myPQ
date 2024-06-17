@@ -53,7 +53,7 @@ void PQsearch(
         uint32_t nq,
         const float* xq,
         uint32_t ncodes,
-        uint8_t *codes,
+        const uint8_t *codes,
         float* distances,
         uint32_t* labels)
 {
@@ -83,18 +83,20 @@ void PQsearch(
         heap.heapify();
         switch (nbits) {
             case 8:
-                uint8_t *cur_code = codes;
-                for (uint32_t j = 0; j < ncodes; j++) {
-                    float dis = 0;
-                    float *cur_lut = dis_table;
-                    for (int m = 0; m < pqdim; m++) {
-                        dis += cur_lut[*cur_code];
-                        cur_code++;
-                        cur_lut += ksub;
+                {
+                    const uint8_t *cur_code = codes;
+                    for (uint32_t j = 0; j < ncodes; j++) {
+                        float dis = 0;
+                        float *cur_lut = dis_table;
+                        for (int m = 0; m < pqdim; m++) {
+                            dis += cur_lut[*cur_code];
+                            cur_code++;
+                            cur_lut += ksub;
+                        }
+                        heap.addn_with_ids(1, &dis, &j);
                     }
-                    heap.addn_with_ids(1, &dis, &j);
+                    break;
                 }
-                break;
             default:
                 assert(0);
         }
