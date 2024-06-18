@@ -98,7 +98,7 @@ void PQsearch(
         for (size_t m = 0; m < pqdim; m++) {
             for(size_t k = 0; k < ksub; k++){
                 const float *x = query + m * subdim;
-                const float *y = centroids + m * subdim * ksub + k;
+                const float *y = centroids + m * ksub * subdim + k * subdim;
                 float dis = 0;
                 for(size_t d = 0; d < subdim; d++){
                     const float tmp =x[d] - y[d];
@@ -135,6 +135,63 @@ void PQsearch(
     }
 }
 
+int main_debug() {//debug
+    //input
+    const uint32_t k = 3;
+    const uint32_t nbits = 8;
+    const uint32_t pqdim = 2;
+    const uint32_t subdim = 2;
+    std::vector<float> centroids(pqdim * 256 * subdim);
+    for (size_t i = 0; i < pqdim; ++i) {
+        for (size_t j = 0; j < 256; ++j){
+            for (size_t k = 0; k < subdim; ++k){
+                std::cout << float(j)<<",";
+                centroids[i * 256 * subdim + j * subdim + k] = float(j);
+            }
+            std::cout << "  ";
+        }
+        std::cout << "\n\n";
+    }
+    std::cout << "\n";
+    const uint32_t nq = 2;
+    std::vector<float> xq{
+        0,0,0,0,
+        5,5,5,5,
+    };
+
+    const uint32_t ncodes = 5;
+    std::vector<uint8_t> codes{
+        1,1,//1,1,1,1
+        2,2,
+        3,3,
+        4,4,
+        5,5,
+    };
+
+    //output
+    float* distances = new float[nq * k];
+    uint32_t* labels = new uint32_t[nq * k];
+
+    //debug
+    PQsearch(k, nbits, pqdim, subdim, centroids.data(), nq, xq.data(), ncodes, codes.data(), distances, labels);
+
+    for (size_t i = 0; i < nq; ++i) {
+        for (size_t j = 0; j < k; ++j) {
+            std::cout << distances[i*k+j] << " ";
+        }
+        std::cout << std::endl;
+    }
+    std::cout << std::endl;
+    for (size_t i = 0; i < nq; ++i) {
+        for (size_t j = 0; j < k; ++j) {
+            std::cout << labels[i*k+j] << " ";
+        }
+        std::cout << std::endl;
+    }
+
+    return 0;
+}
+
 int main() {
     //input
     const uint32_t k = 5;
@@ -165,7 +222,7 @@ int main() {
 
     for (size_t i = 0; i < nq; ++i) {
         for (size_t j = 0; j < k; ++j) {
-            std::cout << distances[i*5+j] << " ";
+            std::cout << labels[i*5+j] << " ";
         }
         std::cout << std::endl;
     }
