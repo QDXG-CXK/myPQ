@@ -32,16 +32,21 @@ std::vector<T> readBinaryFile(const std::string& filePath, size_t fileSize) {
 }
 
 int main() {
-    std::string filePath = "../data/float/gt_I.bin";
-    size_t fileSize = 4000; // 假设文件大小为1024字节，实际大小请替换为正确的值
-
     // 调用函数读取文件，将数据读取成uint8_t类型的向量
-    std::vector<int64_t> fileData = readBinaryFile<int64_t>(filePath, fileSize);
-
+    std::vector<int64_t> fileData = readBinaryFile<int64_t>("../data/float/gt_I.bin", 4000);
     // 输出读取的数据（仅示例）
     for (size_t i = 0; i < fileData.size(); ++i) {
         if(i%5==0) std::cout<<std::endl;
         std::cout << fileData[i] << " ";
+    }
+    std::cout << std::endl;
+
+    // 调用函数读取文件，将数据读取成uint8_t类型的向量
+    std::vector<float> fileData2 = readBinaryFile<float>("../data/float/gt_D.bin", 2000);
+    // 输出读取的数据（仅示例）
+    for (size_t i = 0; i < fileData2.size(); ++i) {
+        if(i%5==0) std::cout<<std::endl;
+        std::cout << fileData2[i] << " ";
     }
     std::cout << std::endl;
 
