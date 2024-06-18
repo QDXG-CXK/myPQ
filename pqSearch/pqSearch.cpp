@@ -1,6 +1,37 @@
 #include <iostream>
 #include <cassert>
+#include <fstream>
+#include <vector>
+#include <string>
+
 #include "utils/Heap.h" // Include the myPQ heap header
+
+template<typename T>
+std::vector<T> readBinaryFile(const std::string& filePath, size_t fileSize) {
+
+    std::vector<T> data(fileSize / sizeof(T));
+
+    // 打开文件
+    std::ifstream file(filePath, std::ios::binary);
+    if (!file.is_open()) {
+        std::cerr << "can't open file " << filePath << std::endl;
+        return std::vector<T>();
+    }
+
+    // 读取文件内容
+    file.read(reinterpret_cast<char*>(data.data()), fileSize);
+    
+    // 检查是否读取成功
+    if (!file) {
+        std::cerr << "failure." << std::endl;
+        return std::vector<T>();
+    }
+
+    // 关闭文件
+    file.close();
+
+    return data;
+}
 
 void test_maxheap_operations() {
     float last_val;
@@ -106,23 +137,41 @@ void PQsearch(
 
 int main() {
     //input
-    const uint32_t k = 2;
+    const uint32_t k = 5;
     const uint32_t nbits = 8;
-    const uint32_t pqdim = 2;
-    const uint32_t subdim = 2;
-    float centroids[pqdim * 256 * subdim]={};
-    const uint32_t nq = 10;
-    float xq[nq * pqdim * subdim]={};
-    const uint32_t ncodes = 10;
-    uint8_t codes[ncodes * pqdim] = {};
+    const uint32_t pqdim = 8;
+    const uint32_t subdim = 4;
+    std::vector<float> centroids = readBinaryFile<float>(
+        "/home/algo/xdu/normal_cpu/myPQ/data/float/mycodebook.bin", 
+        pqdim * 256 * subdim * sizeof(float)
+    );
+    const uint32_t nq = 100;
+    std::vector<float> xq = readBinaryFile<float>(
+        "/home/algo/xdu/normal_cpu/myPQ/data/float/query.bin", 
+        nq * pqdim * subdim * sizeof(float)
+    );
+    const uint32_t ncodes = 10000;
+    std::vector<uint8_t> codes = readBinaryFile<float>(
+        "/home/algo/xdu/normal_cpu/myPQ/data/float/mycodes.bin", 
+        ncodes * pqdim * sizeof(uint8_t)
+    );
 
     //output
     float* distances = new float[nq * k];
     uint32_t* labels = new uint32_t[nq * k];
 
+    // read bin files
+    std::vector<int64_t> fileData = readBinaryFile<int64_t>(filePath, fileSize);
 
     //debug
-    PQsearch(k, nbits, pqdim, subdim, centroids, nq, xq, ncodes, codes,distances, labels);
+    PQsearch(k, nbits, pqdim, subdim, centroids.data(), nq, xq.data(), ncodes, codes.data(), distances, labels);
+
+    for (size_t i = 0; i < nq; ++i) {
+        for (size_t j = 0; j < k; ++j) {
+            std::cout << labels[i] << " ";
+        }
+        std::cout << std::endl;
+    }
 
     return 0;
 }
