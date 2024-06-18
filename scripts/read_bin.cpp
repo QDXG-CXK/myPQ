@@ -39,7 +39,7 @@ int main() {
     std::vector<uint8_t> fileData = readBinaryFile<uint8_t>(filePath, fileSize);
 
     // 输出读取的数据（仅示例）
-    for (size_t i = 0; i < 10; ++i) {
+    for (size_t i = fileData.size()-10; i < fileData.size(); ++i) {
         std::cout << static_cast<int>(fileData[i]) << " ";
     }
     std::cout << std::endl;
