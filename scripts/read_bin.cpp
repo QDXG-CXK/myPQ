@@ -32,15 +32,15 @@ std::vector<T> readBinaryFile(const std::string& filePath, size_t fileSize) {
 }
 
 int main() {
-    std::string filePath = "mycodes.bin";
-    size_t fileSize = 1024; // 假设文件大小为1024字节，实际大小请替换为正确的值
+    std::string filePath = "../data/float/mycodes.bin";
+    size_t fileSize = 80000; // 假设文件大小为1024字节，实际大小请替换为正确的值
 
     // 调用函数读取文件，将数据读取成uint8_t类型的向量
     std::vector<uint8_t> fileData = readBinaryFile<uint8_t>(filePath, fileSize);
 
     // 输出读取的数据（仅示例）
-    for (size_t i = 0; i < fileData.size(); ++i) {
-        std::cout << std::hex << static_cast<int>(fileData[i]) << " ";
+    for (size_t i = 0; i < 10; ++i) {
+        std::cout << static_cast<int>(fileData[i]) << " ";
     }
     std::cout << std::endl;
 
