@@ -151,7 +151,7 @@ int main() {
         nq * pqdim * subdim * sizeof(float)
     );
     const uint32_t ncodes = 10000;
-    std::vector<uint8_t> codes = readBinaryFile<float>(
+    std::vector<uint8_t> codes = readBinaryFile<uint8_t>(
         "/home/algo/xdu/normal_cpu/myPQ/data/float/mycodes.bin", 
         ncodes * pqdim * sizeof(uint8_t)
     );
@@ -159,9 +159,6 @@ int main() {
     //output
     float* distances = new float[nq * k];
     uint32_t* labels = new uint32_t[nq * k];
-
-    // read bin files
-    std::vector<int64_t> fileData = readBinaryFile<int64_t>(filePath, fileSize);
 
     //debug
     PQsearch(k, nbits, pqdim, subdim, centroids.data(), nq, xq.data(), ncodes, codes.data(), distances, labels);
