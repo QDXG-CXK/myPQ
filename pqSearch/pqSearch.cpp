@@ -75,6 +75,7 @@ void test_maxheap_operations() {
         }
 }
 
+template<typename T>
 void PQsearch(
         uint32_t k,
         uint32_t nbits,
@@ -82,7 +83,7 @@ void PQsearch(
         uint32_t subdim,
         float* centroids,
         uint32_t nq,
-        const float* xq,
+        const T* xq,
         uint32_t ncodes,
         const uint8_t *codes,
         float* distances,
@@ -94,14 +95,14 @@ void PQsearch(
     for (uint32_t i=0; i<nq; i++){
         //create lut
         float *dis_table = new float[ksub * pqdim];
-        const float *query = xq + i * dim;
+        const T *query = xq + i * dim;
         for (size_t m = 0; m < pqdim; m++) {
             for(size_t k = 0; k < ksub; k++){
-                const float *x = query + m * subdim;
+                const T *x = query + m * subdim;
                 const float *y = centroids + m * ksub * subdim + k * subdim;
                 float dis = 0;
                 for(size_t d = 0; d < subdim; d++){
-                    const float tmp =x[d] - y[d];
+                    const float tmp =float(x[d]) - y[d];
                     dis += tmp * tmp;
                 }
                 dis_table[m * ksub + k] = dis;
@@ -199,17 +200,17 @@ int main() {
     const uint32_t pqdim = 8;
     const uint32_t subdim = 4;
     std::vector<float> centroids = readBinaryFile<float>(
-        "/home/algo/xdu/normal_cpu/myPQ/data/float/mycodebook.bin", 
+        "/home/algo/xdu/normal_cpu/myPQ/int8/float/mycodebook.bin", 
         pqdim * 256 * subdim * sizeof(float)
     );
     const uint32_t nq = 100;
-    std::vector<float> xq = readBinaryFile<float>(
-        "/home/algo/xdu/normal_cpu/myPQ/data/float/query.bin", 
+    std::vector<int8> xq = readBinaryFile<float>(
+        "/home/algo/xdu/normal_cpu/myPQ/int8/float/query.bin", 
         nq * pqdim * subdim * sizeof(float)
     );
     const uint32_t ncodes = 10000;
     std::vector<uint8_t> codes = readBinaryFile<uint8_t>(
-        "/home/algo/xdu/normal_cpu/myPQ/data/float/mycodes.bin", 
+        "/home/algo/xdu/normal_cpu/myPQ/int8/float/mycodes.bin", 
         ncodes * pqdim * sizeof(uint8_t)
     );
 
@@ -218,7 +219,7 @@ int main() {
     uint32_t* labels = new uint32_t[nq * k];
 
     //debug
-    PQsearch(k, nbits, pqdim, subdim, centroids.data(), nq, xq.data(), ncodes, codes.data(), distances, labels);
+    PQsearch<int8>(k, nbits, pqdim, subdim, centroids.data(), nq, xq.data(), ncodes, codes.data(), distances, labels);
 
     for (size_t i = 0; i < nq; ++i) {
         for (size_t j = 0; j < k; ++j) {
