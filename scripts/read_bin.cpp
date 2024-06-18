@@ -39,7 +39,8 @@ int main() {
     std::vector<int64_t> fileData = readBinaryFile<int64_t>(filePath, fileSize);
 
     // 输出读取的数据（仅示例）
-    for (size_t i = fileData.size()-10; i < fileData.size(); ++i) {
+    for (size_t i = 0; i < fileData.size(); ++i) {
+        if(i%5==0) std::cout<<std::endl;
         std::cout << fileData[i] << " ";
     }
     std::cout << std::endl;
