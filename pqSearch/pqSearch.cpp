@@ -200,17 +200,17 @@ int main() {
     const uint32_t pqdim = 8;
     const uint32_t subdim = 4;
     std::vector<float> centroids = readBinaryFile<float>(
-        "/home/algo/xdu/normal_cpu/myPQ/int8/float/mycodebook.bin", 
+        "/home/algo/xdu/normal_cpu/myPQ/data/int8/mycodebook.bin", 
         pqdim * 256 * subdim * sizeof(float)
     );
     const uint32_t nq = 100;
-    std::vector<char> xq = readBinaryFile<float>(
-        "/home/algo/xdu/normal_cpu/myPQ/int8/float/query.bin", 
-        nq * pqdim * subdim * sizeof(float)
+    std::vector<char> xq = readBinaryFile<char>(
+        "/home/algo/xdu/normal_cpu/myPQ/data/int8/query.bin", 
+        nq * pqdim * subdim * sizeof(char)
     );
     const uint32_t ncodes = 10000;
     std::vector<uint8_t> codes = readBinaryFile<uint8_t>(
-        "/home/algo/xdu/normal_cpu/myPQ/int8/float/mycodes.bin", 
+        "/home/algo/xdu/normal_cpu/myPQ/data/int8/mycodes.bin", 
         ncodes * pqdim * sizeof(uint8_t)
     );
 
