@@ -102,7 +102,7 @@ void PQsearch(
                 const float *y = centroids + m * ksub * subdim + k * subdim;
                 float dis = 0;
                 for(size_t d = 0; d < subdim; d++){
-                    const float tmp =float(x[d]) - y[d];
+                    const float tmp = static_cast<float>(x[d]) - y[d];
                     dis += tmp * tmp;
                 }
                 dis_table[m * ksub + k] = dis;
@@ -204,7 +204,7 @@ int main() {
         pqdim * 256 * subdim * sizeof(float)
     );
     const uint32_t nq = 100;
-    std::vector<int8> xq = readBinaryFile<float>(
+    std::vector<char> xq = readBinaryFile<float>(
         "/home/algo/xdu/normal_cpu/myPQ/int8/float/query.bin", 
         nq * pqdim * subdim * sizeof(float)
     );
@@ -219,7 +219,7 @@ int main() {
     uint32_t* labels = new uint32_t[nq * k];
 
     //debug
-    PQsearch<int8>(k, nbits, pqdim, subdim, centroids.data(), nq, xq.data(), ncodes, codes.data(), distances, labels);
+    PQsearch<char>(k, nbits, pqdim, subdim, centroids.data(), nq, xq.data(), ncodes, codes.data(), distances, labels);
 
     for (size_t i = 0; i < nq; ++i) {
         for (size_t j = 0; j < k; ++j) {
