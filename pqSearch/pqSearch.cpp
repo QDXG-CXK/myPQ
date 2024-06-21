@@ -227,6 +227,13 @@ int main() {
         }
         std::cout << std::endl;
     }
+    std::cout << std::endl;
+    for (size_t i = 0; i < nq; ++i) {
+        for (size_t j = 0; j < k; ++j) {
+            std::cout << labels[i*5+j] << " ";
+        }
+        std::cout << std::endl;
+    }
 
     return 0;
 }
