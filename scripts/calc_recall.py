@@ -27,13 +27,5 @@ def calc_recall(res, gt):
         print(f"recall{x}@{y}: {recall:.4f}")
       
 res = read_bin("/home/algo/xdu/opPQ/pqsearch/2_verify_op/run/out/result_files/output_0.bin", (N_QUERY, K), np.int32)
-gt_I = read_bin("/home/algo/xdu/normal_cpu/myPQ/data/int8/gt_I.bin", (N_QUERY, K), np.int32)
+gt_I = read_bin("/home/algo/xdu/normal_cpu/myPQ/data/int8/gt_I.bin", (N_QUERY, K), np.int64).astype(np.int32)
 calc_recall(res, gt_I)
-
-# for x,y in recall_x_at_y:
-#     total_recall = 0
-#     for i in range(N_QUERY):
-#         for j in range(y):
-#             for k in range(x):
-#                 if res[i][j] == gt_I[i][k]:
-#                     total_recall += 1
