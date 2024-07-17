@@ -1,5 +1,0 @@
-opInfo.flagSupportBlockDim=True
-opInfo.functionName=RunCpuKernelWithBlock
-// 3. 设置单算子模型文件所在的目录
-// 该目录相对可执行文件所在的目录，例如，编译出来的可执行文件存放在run/out目录下，此处就表示run/out/op_models目录
-aclopSetModelDir("op_models");
