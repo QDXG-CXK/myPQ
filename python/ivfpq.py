@@ -157,7 +157,18 @@ def search(index, xq, K, gt):
 if __name__=='__main__':
     xb, xq, gt, dim = load_dataset()
     xs = xb[np.random.choice(xb.shape[0], size=min(xb.shape[0], args.numSample), replace=False),:]
-    
+ 
+    # padding
+    d_sub = 1
+    while d_sub * m < d:
+        d_sub += 1
+    d_new = d_sub * m
+    n_padding = d_new - d
+    xb = utils.insert_zeros(data, d_sub, n_padding)
+    xq = utils.insert_zeros(query, d_sub, n_padding)
+    print(f"Inserting {n_padding} zeros. {d} dim will be expanded into {d_new} dim.")
+
+   
     if args.algo=="ivfpq":
         quantizer = faiss.IndexFlatL2(dim)
         index = faiss.IndexIVFPQ(quantizer, dim, args.nlists, args.pqdim, args.nbits)
