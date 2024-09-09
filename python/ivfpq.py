@@ -1,7 +1,10 @@
 import numpy as np
-import re
-import time
 import faiss
+import argparse
+import time
+import re
+from numba import jit, prange
+from joblib import Parallel, delayed
 
 # global config
 recallx_at_y=[(1,1), (1,10), (1,100), (15,100), (200,5000)] # recall x @ y
@@ -15,6 +18,7 @@ parser.add_argument("algo", choices=['ivfpq', 'ivf-indenp-pq'], help="which inde
 parser.add_argument("--nlists", type=int, default=1024, help="the number of clusters of ivf.")
 parser.add_argument("--nbits", type=int, default=8, help="the code width of pq/sq.")
 parser.add_argument("--pqdim", type=int, default=32, help="the number of pq subspaces.")
+parser.add_argument("--nprobe", type=int, nargs='*', default=[10, 128], help="the number of ivf clusters to probe.")
 args = parser.parse_args()
 
 # dataset path
@@ -103,14 +107,10 @@ def searchDetail(index, xq, K, gt):
     _, I = index.search(xq, K)
     print(time.strftime("[%H:%M:%S]", time.localtime()), f"Done. Search time: {time.time() - t0 :.2f} seconds")
     # calculate recall
-    if not args.noRecall:
-        print("\nrecall:")
-        calc_recall(I, gt)
+    print("\nrecall:")
+    calc_recall(I, gt)
 
 def search(index, xq, K, gt):
-    if args.gpu and K>2048:
-        index = faiss.index_gpu_to_cpu(index)
-        print("\nK is too large. search on CPU.")
     if args.algo[0:3]=="ivf":
         for np in args.nprobe:
             index.nprobe = np
