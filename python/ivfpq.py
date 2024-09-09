@@ -20,6 +20,7 @@ parser.add_argument("--nlists", type=int, default=1024, help="the number of clus
 parser.add_argument("--nbits", type=int, default=8, help="the code width of pq/sq.")
 parser.add_argument("--pqdim", type=int, default=32, help="the number of pq subspaces.")
 parser.add_argument("--nprobe", type=int, nargs='*', default=[10, 128], help="the number of ivf clusters to probe.")
+parser.add_argument("--numSample", type=int, default=100000, help="number of Sample to train.")
 args = parser.parse_args()
 
 # dataset path
@@ -155,10 +156,12 @@ def search(index, xq, K, gt):
 
 if __name__=='__main__':
     xb, xq, gt, dim = load_dataset()
+    xs = xb[np.random.choice(xb.shape[0], size=min(xb.shape[0], args.numSample), replace=False),:]
     
     if args.algo=="ivfpq":
         quantizer = faiss.IndexFlatL2(dim)
         index = faiss.IndexIVFPQ(quantizer, dim, args.nlists, args.pqdim, args.nbits)
+        index.train(xs)
         index.add(xb)
         search(index, xq, K, gt)
     elif args.algo=="ivf-indenp-pq":
