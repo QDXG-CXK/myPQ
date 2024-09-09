@@ -133,6 +133,7 @@ void PQsearch(
                 assert(0);
         }
         heap.reorder(); // heap --> ordered list
+        delete[] dis_table;
     }
 }
 
@@ -234,6 +235,9 @@ int main() {
         }
         std::cout << std::endl;
     }
+
+    delete[] distances;
+    delete[] labels;
 
     return 0;
 }
