@@ -159,6 +159,7 @@ if __name__=='__main__':
     if args.algo=="ivfpq":
         quantizer = faiss.IndexFlatL2(dim)
         index = faiss.IndexIVFPQ(quantizer, dim, args.nlists, args.pqdim, args.nbits)
+        index.add(xb)
         search(index, xq, K, gt)
     elif args.algo=="ivf-indenp-pq":
         pass
