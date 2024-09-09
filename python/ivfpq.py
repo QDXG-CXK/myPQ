@@ -84,6 +84,39 @@ def load_dataset():
         (n_base, x_base.dtype, dim_base, n_query, k_gt)
     )
     return x_base, x_query, gt, int(dim_base)
+
+def insert_zeros(xb, subDim, N0):
+    if(N0>10):
+        return insert_zeros_parallel(xb, subDim, N0)
+
+    insert_positions = np.arange(subDim - 1, subDim * (N0 + 1) - 1, subDim)
+    for pos in insert_positions:
+        xb = np.insert(xb, pos, 0, axis=1)    
+    return xb
+
+@jit(nopython=True, parallel=True)
+def insert_zeros_parallel(xb, subDim, N0):
+    insert_positions = np.arange(subDim - 2, (subDim - 1) * (N0 + 1) - 1, subDim - 1)
+    position_map = np.zeros(xb.shape[1] + N0, dtype=np.int32)
+    current_col = 0
+    insert_idx = 0
+    next_insert_pos = insert_positions[insert_idx] if len(insert_positions) > 0 else None    
+    for i in range(xb.shape[1]):
+        position_map[i] = current_col
+        if next_insert_pos is not None and i == next_insert_pos:
+            current_col += 1  # move to next position to insert 0
+            if insert_idx < len(insert_positions) - 1:
+                insert_idx += 1
+                next_insert_pos = insert_positions[insert_idx]
+            else:
+                next_insert_pos = None        
+        current_col += 1    
+    # create new array
+    new_xb = np.zeros((xb.shape[0], xb.shape[1] + N0), dtype=xb.dtype)
+    for i in prange(xb.shape[1]):
+        new_col_index = position_map[i]
+        new_xb[:, new_col_index] = xb[:, i]    
+    return new_xb
     
 def calc_recall_for_single_query(res_i, gt_i, X, Y):
     k_temp = gt_i.size - np.sum(gt_i == -1)  # Calculate the valid elements in gt_i
