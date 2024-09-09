@@ -15,6 +15,7 @@ PATH_BASE = ""
 
 parser = argparse.ArgumentParser(description="This program test recall and qps of different ann search index/method with faiss lib.")
 parser.add_argument("algo", choices=['ivfpq', 'ivf-indenp-pq'], help="which index algorithm to apply")
+parser.add_argument("--dataset", choices=['ood400m','ood600m','webface25m256d','sift1m','ood10m'], default="ood10m")
 parser.add_argument("--nlists", type=int, default=1024, help="the number of clusters of ivf.")
 parser.add_argument("--nbits", type=int, default=8, help="the code width of pq/sq.")
 parser.add_argument("--pqdim", type=int, default=32, help="the number of pq subspaces.")
