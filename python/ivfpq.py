@@ -123,11 +123,11 @@ def search(index, xq, K, gt):
 if __name__=='__main__':
     xb, xq, gt, dim = load_dataset()
     
-    if algo=="ivfpq":
+    if args.algo=="ivfpq":
         quantizer = faiss.IndexFlatL2(dim)
         index = faiss.IndexIVFPQ(quantizer, dim, args.nlists, args.pqdim, args.nbits)
         search(index, xq, K, gt)
-    elif algo=="ivf-indenp-pq":
+    elif args.algo=="ivf-indenp-pq":
         pass
         quantizer = faiss.IndexFlatL2(dim)
         index = faiss.IndexIVFFlat(quantizer, dim, args.nlists)
