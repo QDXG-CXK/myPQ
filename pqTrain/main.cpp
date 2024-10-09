@@ -3,7 +3,7 @@
 #include <string.h>
 #include <iostream>
 #include <fstream>
-#include "utils/kmeans_utils.h"
+#include "clustering.h"
 #include "omp.h"
 #include <chrono>
 
